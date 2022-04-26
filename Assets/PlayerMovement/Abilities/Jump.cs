@@ -14,7 +14,7 @@ public class Jump : MonoBehaviour
     public float jumpSpeed;
     private float maxSpeedChange;
     private bool onGround;
-    private int jumpPhase;
+    public int jumpPhase;
     private Vector2 velocity;
     private Rigidbody2D _rigidbody;
     private BoxCollider2D _boxCollider;
@@ -27,6 +27,7 @@ public class Jump : MonoBehaviour
         _boxCollider = GetComponent<BoxCollider2D>();
         _playerInputGet = GetComponent<PlayerInputGet>();
         _groundCheck = GetComponent<GroundCheck>();
+        onGround = _groundCheck.IsGrounded();
 
     }
 
@@ -38,12 +39,7 @@ public class Jump : MonoBehaviour
 
     private void FixedUpdate()
     {
-        onGround = _groundCheck.IsGrounded();
         velocity = _rigidbody.velocity;
-        if (onGround)
-        {
-            jumpPhase = 0;
-        }
         if (jumpRequest)
         {
             jumpRequest = false;
@@ -52,11 +48,24 @@ public class Jump : MonoBehaviour
         _rigidbody.velocity = velocity;
 
     }
-
+    public void setJumpPhase(int i)
+    {
+        switch (i)
+        {
+            case 0:
+                jumpPhase = 0;
+                break;
+            case 1:
+                jumpPhase = Mathf.Max(1, jumpPhase);
+                break;
+        }
+        
+        
+    }
 
     private void JumpAction()
     {
-        if(onGround || jumpPhase < maxJump)
+        if(jumpPhase < maxJump)
         {
             jumpPhase++;
             velocity.y = jumpSpeed;

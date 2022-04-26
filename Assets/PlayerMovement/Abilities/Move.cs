@@ -17,6 +17,7 @@ public class Move : MonoBehaviour
     private Vector2 desSpeed;
     private Vector2 velocity;
     private Rigidbody2D _rigidbody;
+    private Jump _jump;
     private BoxCollider2D _boxCollider;
     private PlayerInputGet _playerInputGet;
     private GroundCheck _groundCheck;
@@ -27,7 +28,7 @@ public class Move : MonoBehaviour
         _boxCollider = GetComponent<BoxCollider2D>();
         _playerInputGet = GetComponent<PlayerInputGet>();
         _groundCheck = GetComponent<GroundCheck>();
-
+        _jump = GetComponent<Jump>();
     }
 
     // Update is called once per frame
@@ -40,12 +41,15 @@ public class Move : MonoBehaviour
     private void FixedUpdate()
     {
         velocity = _rigidbody.velocity;
+        if (desSpeed.x == 0 && velocity.x == 0 && velocity.y == 0) { return; }
         if (_groundCheck.IsGrounded())
         {
-            maxSpeedChange = acceleration * Time.deltaTime; 
+            maxSpeedChange = acceleration * Time.deltaTime;
+            _jump.setJumpPhase(0);
         }
         else
         {
+            _jump.setJumpPhase(1);
             maxSpeedChange = airAcceleration * Time.deltaTime;
         }
         velocity.x = Mathf.MoveTowards(velocity.x, desSpeed.x, maxSpeedChange);
